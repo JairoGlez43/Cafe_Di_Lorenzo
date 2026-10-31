@@ -22,6 +22,8 @@ se hace por adelantado para ofrecérsela al café. Todavía no es un encargo.
 - Animaciones con SVG + CSS. Nada de vídeo, Lottie ni librerías 3D.
 - Con `prefers-reduced-motion`, todo queda en estado estático.
 - Demo privada con `noindex` hasta que el café acepte.
+- El `noindex` vive en dos sitios: la meta `robots` de `src/app/layout.tsx` y la cabecera
+  `X-Robots-Tag` de `public/_headers` (Cloudflare Pages). Para publicar hay que quitar los dos.
 
 ## Idioma
 Toda la interfaz en español.
@@ -59,6 +61,9 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
   puerto libre a través de `scripts/servidor.ts`.
 - `pnpm weight` admite `PESO_PRIMERA_VISTA_KB`, `PESO_PAGINA_KB` y `PESO_JS_KB` para bajar los
   límites y comprobar que el script falla.
+- `pnpm deploy:pages`: sube `out/` a Cloudflare Pages con wrangler (dependencia de desarrollo); antes,
+  `pnpm build`. La primera vez pide `pnpm exec wrangler login`. No se llama `deploy` porque
+  `pnpm deploy` es un comando propio de pnpm.
 
 ## Convenciones de código
 - Identificadores en español con los términos de `CONTEXT.md` (`portada`, `variantes`, `servir`);
@@ -72,11 +77,19 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
 - Componentes como Server Components; `'use client'` solo donde hay interacción (ADR 0005).
 - Tests con Vitest, sin archivo de config, junto al módulo que prueban (`src/lib/links.test.ts`).
 - Generados y fuera de git: `public/img/`, `out/` y `.verify/`. No se commitean.
+- `references/` también está fuera de git (fotos de IG sin permiso, ADR 0004; el repo es público).
+  Quien clone el repo tiene que copiar ahí los originales que cita `src/content.ts` para que
+  `pnpm build` funcione.
 
 ## Referencias
 - Fotos de IG y logo: `references/img-1_files/`. Inspiración: `references/landing_references/`.
 - Términos del dominio: `CONTEXT.md`. Decisiones: `docs/adr/`.
 - Plan y preguntas abiertas: `docs/plan.md`.
+
+## Agent skills
+- Declined: wrangler (`cloudflare/skills`). Para dudas de Cloudflare Pages o wrangler, consultar la
+  doc oficial con el subagente `researcher` en vez de instalar la skill.
+- MCP servers: ninguno; lo externo (deploy, cabeceras, docs) se hace con CLI, `curl` y búsqueda web.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
