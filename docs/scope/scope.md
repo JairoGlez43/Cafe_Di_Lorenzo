@@ -18,7 +18,7 @@ Every feature below shares the same bar from `AGENTS.md`: weight script passes a
 | C | Verification scripts | Foundation | existing |
 | 1 | Portada deployed | Slice 1 | in-progress |
 | 2 | Tipografía | Foundation | planned |
-| 11 | Lighthouse estable | Foundation | planned |
+| 11 | Lighthouse estable | Foundation | done |
 | 3 | El lugar | Slice 2 | planned |
 | 4 | Visítanos | Slice 2 | planned |
 | 5 | Animación protagonista | Slice 3 | planned |
@@ -64,10 +64,13 @@ One self hosted font family with a Latin subset, chosen so the page reads as the
 **Done when:** the font loads from the export (no third party request); the primera vista stays within budget with it; Lighthouse reports no layout shift; the fallback stack keeps the text readable while it loads.
 - [ ] Design it (spec): `/architect tipografía`
 
-### 11. Lighthouse estable
+### 11. Lighthouse estable · done
 Surfaced while verifying the Portada: the Lighthouse check judges a single run, and on this machine one run of the same build swings from 67 to 98 on Rendimiento because of CPU load. It should run several times and judge the median, so a slice fails because of the page, not the laptop.
 **Done when:** `pnpm lighthouse <N>` runs several times, prints every run and judges the median against the same limits; it still exits 1 when the median fails (checked with a lowered limit); every run's report is kept in `.verify/slice-N/`.
-- [ ] Build it: `/develop lighthouse estable`
+spec [0006](../specs/0006-lighthouse-estable/index.md)
+- [x] Design it (spec): `/architect lighthouse estable` (ratified after the build)
+- [x] Build it: `/develop lighthouse estable`
+code in `scripts/lighthouse.ts`
 
 ## Slice 2: El lugar and Visítanos
 
@@ -124,6 +127,7 @@ Out of scope for the demo, kept so the plan stays honest. Most unlock only when 
 - **Contenido confirmado por el café**: replace provisional content (product names, hours, phone, photos with permission) with what the café confirms.
 - **SEO público tras aceptar**: drop `noindex`, add a sitemap, local business structured data and a domain of its own · needs a decision
 - **Analítica ligera sin cookies**: anonymous visit and click counts for "Cómo llegar" and WhatsApp, no consent banner · needs a decision
+- **Límites por env var validados**: `pnpm lighthouse` and `pnpm weight` fail when a limit env var is not a number, instead of reading an empty string as 0 · from spec 0006
 - **Precios y pedidos**: prices, orders and reservations, left out of v1 by `AGENTS.md`; a possible v2 · needs a decision
 
 ## Legend
