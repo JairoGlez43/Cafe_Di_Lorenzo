@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Single theme (ADR 0003). Colours sampled from the logo; each one becomes a
+   CSS variable (--color-verde) and its utilities (bg-verde, text-dorado). */
+@theme {
+  --color-verde: #204229;
+  --color-dorado: #c4a472;
+  --color-crema: #f5efe2;
+  --color-tinta: #1b2a1f;
+}

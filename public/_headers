@@ -1,0 +1,5 @@
+# Cloudflare Pages headers. Next copies public/ into out/ untouched, so this
+# lands at the root of the deployed site. Private demo: keep every URL
+# (HTML and images) out of search engines until the café accepts (ADR 0004).
+/*
+  X-Robots-Tag: noindex
