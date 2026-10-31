@@ -1,5 +1,5 @@
 // Image variants that scripts/images.ts generates into public/img at build time
-// (ADR 0001: no next/image optimizer in a static export). Shared by the script and
+// (spec 0001: no next/image optimizer in a static export). Shared by the script and
 // the components so both agree on names and widths.
 
 export const formatos = ["avif", "webp"] as const;

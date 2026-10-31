@@ -13,7 +13,7 @@ export const cafe = {
   direccion: "Calle 20 e/ 31A y 33, Miramar, Playa, La Habana, Cuba",
   whatsapp: "+53 50539476",
   instagram: "cafe_dilorenzo_habana",
-  // Originals from Instagram, private demo only (ADR 0004). Converted by scripts/images.ts.
+  // Originals from Instagram, private demo only (spec 0004). Converted by scripts/images.ts.
   logo: { origen: "references/img-1_files/DiLorenzo_Logo.jpg", alt: "Café Di Lorenzo" },
 };
 

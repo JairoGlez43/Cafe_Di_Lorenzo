@@ -15,7 +15,7 @@ se hace por adelantado para ofrecérsela al café. Todavía no es un encargo.
   Secundarias: WhatsApp e Instagram.
 
 ## Restricciones duras
-- Primera vista ≤ 300 KB transferidos; página completa ≤ 1,2 MB; JS ≤ 180 KB gzip (ver `docs/adr/0005`).
+- Primera vista ≤ 300 KB transferidos; página completa ≤ 1,2 MB; JS ≤ 180 KB gzip (ver spec 0005 en `docs/specs/`).
 - LCP ≤ 3 s en Lighthouse móvil con red lenta; Rendimiento y Accesibilidad ≥ 90.
 - Next.js con exportación estática: sin servidor, sin base de datos, sin formularios propios.
 - Imágenes convertidas a AVIF/WebP en el build; nunca servir los originales de `references/`.
@@ -74,17 +74,17 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
 - Cada imagen tiene su origen en `src/content.ts`, su variante (anchos y proporción) en
   `src/lib/imagenes.ts` y una llamada `generar` en `scripts/images.ts`. Los componentes usan
   `<picture>` con `<source>` AVIF e `<img>` WebP; nunca `next/image`.
-- Componentes como Server Components; `'use client'` solo donde hay interacción (ADR 0005).
+- Componentes como Server Components; `'use client'` solo donde hay interacción (spec 0005).
 - Tests con Vitest, sin archivo de config, junto al módulo que prueban (`src/lib/links.test.ts`).
 - Generados y fuera de git: `public/img/`, `out/` y `.verify/`. No se commitean.
-- `references/` también está fuera de git (fotos de IG sin permiso, ADR 0004; el repo es público).
+- `references/` también está fuera de git (fotos de IG sin permiso, spec 0004; el repo es público).
   Quien clone el repo tiene que copiar ahí los originales que cita `src/content.ts` para que
   `pnpm build` funcione.
 
 ## Referencias
 - Fotos de IG y logo: `references/img-1_files/`. Inspiración: `references/landing_references/`.
-- Términos del dominio: `CONTEXT.md`. Decisiones: `docs/adr/`.
-- Plan y preguntas abiertas: `docs/plan.md`.
+- Términos del dominio: `CONTEXT.md`. Decisiones: `docs/specs/` (las 0001 a 0005 vienen de las antiguas ADR).
+- Plan, orden de slices y decisiones pendientes: `docs/scope/scope.md`.
 
 ## Agent skills
 - Declined: wrangler (`cloudflare/skills`). Para dudas de Cloudflare Pages o wrangler, consultar la

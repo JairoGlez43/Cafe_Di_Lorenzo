@@ -1,7 +1,7 @@
 // Weight script: checks the presupuesto de peso of CLAUDE.md against out/ (run after `pnpm build`).
 // - Primera vista: compressed bytes a real browser downloads at 375x812 without scrolling (CONTEXT.md).
 // - Página completa: the same after scrolling to the bottom.
-// - JS: gzip sum of every <script src> in the exported index.html (ADR 0005).
+// - JS: gzip sum of every <script src> in the exported index.html (spec 0005).
 // Limits can be lowered through env vars (PESO_PRIMERA_VISTA_KB, PESO_PAGINA_KB, PESO_JS_KB) to prove the script fails.
 import { readFile } from "node:fs/promises";
 import { gzipSync } from "node:zlib";

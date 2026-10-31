@@ -33,7 +33,7 @@ Every feature below shares the same bar from `AGENTS.md`: weight script passes a
 Built before this workflow, enrolled for context. `/develop` and `/sync` leave them alone.
 
 ### A. Stack, theme and static export · existing
-Next.js App Router with `output: "export"`, Tailwind 4 through Turbopack, the single theme as CSS variables (`verde`, `dorado`, `crema`, `tinta`), `lang="es"` and `noindex` on the root layout (ADR 0001, 0003, 0004, 0005). code in `src/app/`, `next.config.ts`
+Next.js App Router with `output: "export"`, Tailwind 4 through Turbopack, the single theme as CSS variables (`verde`, `dorado`, `crema`, `tinta`), `lang="es"` and `noindex` on the root layout (specs 0001, 0003, 0004, 0005). code in `src/app/`, `next.config.ts`
 
 ### B. Content module and image pipeline · existing
 All editable content in one typed module; link builders for Maps, WhatsApp and Instagram with a Vitest test; image variants declared once and converted from `references/` to AVIF and WebP by sharp before each build, never served as originals. code in `src/content.ts`, `src/lib/`, `scripts/images.ts`
@@ -46,15 +46,15 @@ The checks that close every slice: weight of the primera vista and the full page
 ### 1. Portada deployed · in-progress
 The thinnest real thread: logo, frase and the three acciones on tono verde, one photo in AVIF and WebP, all text from the módulo de contenido, exported and served from a private URL. Everything later thickens this thread.
 **Done when:** the static export passes every check in the shared bar; the deployed URL answers with `noindex` (meta and `X-Robots-Tag` header); the Portada opens on a real phone.
-- [x] Decide the thread (plan): hosting, link data, Portada phrase, how to measure the primera vista (recorded in `docs/plan.md` and `.verify/slice-1/steps.md`)
-- [ ] Build it: `/develop portada`
+- [x] Decide the thread (plan): hosting, link data, Portada phrase, how to measure the primera vista (the old `docs/plan.md` is merged into this scope)
+- [x] Build it: `/develop portada`
    - [x] Static skeleton: export, layout, theme, `.gitignore`
    - [x] Content module, link builders with test, Portada component
    - [x] Image pipeline and `<picture>` in the Portada
    - [x] Weight, screenshots and Lighthouse scripts, evidence in `.verify/slice-1/`
    - [x] Deploy to the chosen host with the `noindex` header (needs your login on the host)
-   - [ ] Open the deployed URL on a real phone
-- [ ] Verify it: `/check verify portada`
+   - [x] Open the deployed URL on a real phone
+- [x] Verify it: `/check verify portada`
 code in `src/components/Portada.tsx`, `src/app/page.tsx`, `public/_headers`
 
 ## Foundation for slice 2
@@ -85,7 +85,7 @@ Tono verde section with the address, opening hours and the acción principal aga
 
 ### 5. Animación protagonista · needs a decision
 The single scroll linked animation of the page, in SVG and CSS, leading the eye from the Portada toward "Cómo llegar". The decisions are the motif and the fallback for browsers without CSS scroll driven animations (static, or a little JS within the JS budget).
-**Done when:** the animation follows the scroll between the Portada and "Cómo llegar"; with `prefers-reduced-motion` everything is static; JS stays within the budget of ADR 0005; screenshots at three scroll positions; smooth on a real Android phone (and iOS Safari if one is at hand).
+**Done when:** the animation follows the scroll between the Portada and "Cómo llegar"; with `prefers-reduced-motion` everything is static; JS stays within the budget of spec 0005; screenshots at three scroll positions; smooth on a real Android phone (and iOS Safari if one is at hand).
 - [ ] Design it (spec): `/architect animación protagonista`
 
 ## Slice 4: Menú
@@ -98,7 +98,7 @@ The Menú section with four categorías (Café, Brunch, Dulces, Batidos); switch
 ## Slice 5: Galería
 
 ### 7. Galería · needs a decision
-A gallery of Instagram photos with lazy loading and responsive sizes. The decisions are which photos, how many, and whether watermarked ones are included (ADR 0004).
+A gallery of Instagram photos with lazy loading and responsive sizes. The decisions are which photos, how many, and whether watermarked ones are included (spec 0004).
 **Done when:** every photo goes through the image pipeline; no original from `references/` is inside the export; the full page stays at 1,2 MB or less with the gallery in.
 - [ ] Design it (spec): `/architect galería`
 

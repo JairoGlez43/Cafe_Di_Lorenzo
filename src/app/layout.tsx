@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: sitio.titulo,
   description: sitio.descripcion,
-  // Private demo until the café accepts (ADR 0004).
+  // Private demo until the café accepts (spec 0004).
   robots: { index: false, follow: false },
 };
 
