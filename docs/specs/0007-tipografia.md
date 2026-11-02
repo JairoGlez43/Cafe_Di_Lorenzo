@@ -8,9 +8,10 @@
 Titles get one brand font, Playfair Display at weight 600, while body text, buttons and links keep
 the phone's own sans font. Next.js downloads the font while it builds the page and serves it from
 our own domain, so the visitor's phone never asks Google for it. It adds about 23 KB to the primera
-vista, shows text at once in a size matched stand in font while the real one arrives, and a new
-Lighthouse gate (CLS, the score for how much the page jumps while loading) keeps that swap almost
-invisible.
+vista and shows text at once in the device's own serif while the real one arrives (the size matched
+stand in that `next/font` promises is not generated under Turbopack, and the project accepts that).
+The fixed line height of the title tokens keeps the swap from moving the page, and a new Lighthouse
+gate (CLS, the score for how much the page jumps while loading) guards later slices.
 
 ## Context
 
@@ -57,9 +58,11 @@ Forces, measured on 2026-10-31:
   40 KB or less (KB of 1024 B, as the script prints), and the primera vista stays within 300 KB.
 - **AC-4**: CLS of the worst of the five Lighthouse runs is 0.02 or less; a missing CLS value counts
   as a failure; `pnpm lighthouse` exits 1 when either happens (proven with `LIGHTHOUSE_CLS=-1`).
-- **AC-5**: Text is never invisible while the font loads: the frase paints at once in the metric
-  adjusted fallback (`font-display: swap`). With every `.woff2` request blocked in Playwright, a
-  375 px capture shows the frase in a serif fallback, on 2 lines, with nothing overflowing.
+- **AC-5**: Text is never invisible while the font loads: the frase paints at once in the generic
+  `serif` fallback (`font-display: swap`). No metric adjusted fallback face is required (Turbopack
+  does not emit one, see Decision). With every `.woff2` request blocked in Playwright, a 375 px
+  capture shows the frase in a serif fallback, on 2 lines, with nothing overflowing, and the
+  "Cómo llegar" button at the same height as with the font loaded.
 - **AC-6**: With the font preloaded, the shared bar still holds: LCP 3 s or less, Performance and
   Accessibility 90 or more in the median run, JS within spec 0005.
 - **AC-7**: The font really loads: after `networkidle`, `document.fonts` holds a Playfair face with
@@ -103,6 +106,8 @@ self hosts it and generates a size matched fallback.
 - The build needs internet: `next build` stops with "Failed to fetch ... from Google Fonts" when
   the download fails (in `dev` it only logs and falls back).
 - The adjusted fallback is built on Times New Roman, which Android lacks.
+- Under Turbopack (this project's bundler) `next/font` 16.4.3 does not emit the adjusted fallback
+  face at all; only a webpack build does (found during `/check verify`, 2026-11-02).
 
 ### Option 3: One family for all text, or two families
 
@@ -134,6 +139,13 @@ Playfair Display, weight 600, Latin subset, `display: 'swap'`, preloaded, expose
 utility `font-titulo` and used for the Portada frase, section titles (`h2`) and Menú product names;
 everything else keeps `font-sans`.
 
+**Fallback under Turbopack (updated 2026-11-02)**: the build ships without a metric adjusted
+fallback face; while Playfair loads, titles show in the generic `serif`. Accepted as is: no hand
+written `@font-face` with copied metrics, and no switch to webpack. Runner up: a hand written
+`Playfair Display Fallback` face in `globals.css` with the four values webpack computes, rejected
+because it only helps devices with Times New Roman (laptops, iPhone), not the Android majority, and
+leaves metrics to keep in sync by hand.
+
 ## Rationale
 
 The pitch needs a recognisable voice and the 3G visitor needs text at once; titles only is the one
@@ -141,8 +153,11 @@ split that gives both, because the brand shows where the eye lands while body te
 a download. One weight keeps the file at 22.7 KB, well inside the 40 KB cap and the 121 KB margin.
 
 `swap` plus preload favours the owners' first impression over the strictest 3G purity: `optional`
-would give CLS 0 but could show the pitch without the brand on a first visit over slow data. The
-adjusted fallback keeps the swap small. The CLS gate is honest about its reach: Lighthouse barely
+would give CLS 0 but could show the pitch without the brand on a first visit over slow data. What
+keeps the swap small is the line height: `--text-frase--line-height` fixes each line's height, so the
+swap cannot move the button while the frase stays on 2 lines; only a change in line count can (the
+adjusted fallback would also have narrowed width differences, but Turbopack does not emit it, and on
+Android it would not apply anyway). The CLS gate is honest about its reach: Lighthouse barely
 sees the swap, so the gate mainly protects every later slice from other jumps (photos, the
 animation), and the font swap itself is judged on the real phone (AC-9). It reads the worst run,
 not the median one, because `computeMedianRun` picks by FCP and TTI and could skip a run with a jump.
@@ -150,9 +165,10 @@ not the median one, because `computeMedianRun` picks by FCP and TTI and could sk
 Fraunces 600 was the recommendation (17.7 KB, sturdier at small sizes). The engineer chose
 Playfair Display for its classic café character; it costs 5 KB more and its thin strokes fade on
 cheap screens, so the 20 px minimum (AC-8) is the guard, and it matters most for the Menú product
-names. `next/font/google` beats committing the file because it computes the fallback metrics from
-the real font; the cost, a build that needs internet, is acceptable since the build already runs on
-the developer's machine before `pnpm deploy:pages`.
+names. `next/font/google` beats committing the file because it cuts the Latin subset, self hosts it
+and writes the preload tag with no hand work (its computed fallback metrics were a further reason,
+lost under Turbopack); the cost, a build that needs internet, is acceptable since the build already
+runs on the developer's machine before `pnpm deploy:pages`.
 
 ## Feature design
 
@@ -174,7 +190,7 @@ de contenido (`src/content.ts`).
 | Load font | Family `Playfair Display`, weight `600` | This spec (engineer's pick) |
 | Load font | Subset `latin` (covers á é í ó ú ñ ü ¿ ¡) | This spec; Google Fonts Latin block U+0000 to U+00FF |
 | Load font | `.woff2` file | Downloaded from Google Fonts by `next build`, emitted to `/_next/static/media/` |
-| Load font | Fallback metrics (`size-adjust`, ascent, descent) | Precalculated by `next/font` on Times New Roman (`next/dist/shared/lib/constants.js`, `DEFAULT_SERIF_FONT`) |
+| Load font | Fallback metrics (`size-adjust`, ascent, descent) | None in this build: Turbopack does not emit the `Playfair Display Fallback` face (webpack would, `size-adjust: 111.26%` on Times New Roman); accepted, see Decision |
 | Load font | Generic fallback after the adjusted one | `fallback: ['serif']` in this spec (Noto Serif on Android) |
 | Load font | Preload tag | `next/font` default (`preload: true`), kept by this spec |
 | Render frase | Text | `portada.frase` in `src/content.ts` (unchanged) |
@@ -196,6 +212,8 @@ de contenido (`src/content.ts`).
 - Font sizes for title text come from `--text-frase`, `--text-titulo` or `--text-producto`, not
   from `text-4xl` style classes or breakpoint overrides.
 - No runtime request leaves the café's domain for a font.
+- Title line height comes from the size token, never from the font, so a font swap can only move
+  the page by changing the number of lines.
 
 **Security model**: public static page; no data, no credentials. Playfair Display ships under the
 SIL Open Font License 1.1, which allows self hosting and bundling. The `noindex` rules of spec 0004
@@ -215,7 +233,8 @@ are untouched.
 - Gate: `pnpm lighthouse tipografia` passes with the worst CLS at 0.02 or less; with
   `LIGHTHOUSE_CLS=-1` it exits 1, verifies **AC-4**, **AC-6**
 - Failure case: with every `.woff2` request blocked in Playwright, the 375 px capture shows the frase
-  in a serif fallback on 2 lines with nothing overflowing, verifies **AC-5**
+  in a serif fallback on 2 lines with nothing overflowing and the button where it is with the font
+  loaded, verifies **AC-5**
 - Rule check: every `font-titulo` use in `src/` carries a size token and `font-semibold`, verifies
   **AC-8**
 - Real device: a first visit on an Android phone over mobile data keeps the frase on the same lines
@@ -260,8 +279,11 @@ slices.
 - About 23 KB more on 3G (roughly half a second at 400 kbps), and the preload competes a little
   with the Portada photo, the likely LCP element.
 - `pnpm build` and `pnpm dev` need internet for the first font download; offline, the build fails.
-- On Android the fallback is not size matched, so the swap can move title lines a little there;
+- The fallback is not size matched on any device (Turbopack emits no adjusted face), so the swap
+  changes letter widths and, on a narrow screen with a wide fallback, could rewrap a title line;
   Lighthouse cannot see it, only the real phone check can, and that check is manual.
+- The spec's earlier promise of a size matched stand in depends on the bundler: a later Next or
+  Turbopack release may start emitting it with no code change, which would only improve the swap.
 - If Google updates the Playfair file, a later build ships the new one without notice; `pnpm weight`
   catches a size change, not a look change.
 - One weight only: a title that needs a different weight or an italic means updating this spec.
@@ -277,6 +299,8 @@ slices.
 - [ ] `/sync`: add `LIGHTHOUSE_CLS` and the CLS gate to the `pnpm lighthouse` lines in `AGENTS.md`,
       and a convention line for title type (`font-titulo`, size tokens, weight 600, 20 px minimum).
 - [ ] Menú spec: define `--text-producto` at 1.25rem or more for product names in `font-titulo`.
+- [ ] On each Next upgrade, search the CSS in `out/` for `Playfair Display Fallback`; if Turbopack
+      now emits it, note it here (no code change needed).
 
 ## References
 
@@ -292,6 +316,14 @@ slices.
   `scripts/shots.ts` (screenshots wait for `networkidle`)
 - Measurement on 2026-10-31: Latin `.woff2` from Google Fonts at one weight: Fraunces 600 17.7 KB,
   Playfair Display 600 22.7 KB, Cormorant Garamond 600 22.8 KB, DM Serif Display 400 24.2 KB
+- Check on 2026-11-02: `next build --webpack` emits `@font-face{font-family:Playfair Display
+  Fallback; src:local("Times New Roman"); size-adjust:111.26%; …}` and the variable
+  `"Playfair Display","Playfair Display Fallback",serif`; the Turbopack build (`pnpm build`) emits
+  only `"Playfair Display", serif`. Playfair metrics are present in
+  `next/dist/server/capsize-font-metrics.json`; the loader computes them
+  (`next/dist/compiled/@next/font/dist/google/loader.js`, `adjustFontFallback`)
+- `/check verify` on 2026-11-02: with `.woff2` blocked, Chrome draws the frase in Times New Roman on
+  Windows, on 2 lines, with the button at the same height as with Playfair loaded
 
 **Practices & standards**:
 - `font-display: swap` with a metric adjusted fallback to keep text visible and limit layout shift
