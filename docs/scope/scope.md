@@ -16,8 +16,8 @@ Every feature below shares the same bar from `AGENTS.md`: weight script passes a
 | A | Stack, theme and static export | Foundation | existing |
 | B | Content module and image pipeline | Foundation | existing |
 | C | Verification scripts | Foundation | existing |
-| 1 | Portada deployed | Slice 1 | in-progress |
-| 2 | Tipografía | Foundation | planned |
+| 1 | Portada deployed | Slice 1 | done |
+| 2 | Tipografía | Foundation | in-progress |
 | 11 | Lighthouse estable | Foundation | done |
 | 3 | El lugar | Slice 2 | planned |
 | 4 | Visítanos | Slice 2 | planned |
@@ -43,7 +43,7 @@ The checks that close every slice: weight of the primera vista and the full page
 
 ## Slice 1: Portada deployed
 
-### 1. Portada deployed · in-progress
+### 1. Portada deployed · done
 The thinnest real thread: logo, frase and the three acciones on tono verde, one photo in AVIF and WebP, all text from the módulo de contenido, exported and served from a private URL. Everything later thickens this thread.
 **Done when:** the static export passes every check in the shared bar; the deployed URL answers with `noindex` (meta and `X-Robots-Tag` header); the Portada opens on a real phone.
 - [x] Decide the thread (plan): hosting, link data, Portada phrase, how to measure the primera vista (the old `docs/plan.md` is merged into this scope)
@@ -59,10 +59,17 @@ code in `src/components/Portada.tsx`, `src/app/page.tsx`, `public/_headers`
 
 ## Foundation for slice 2
 
-### 2. Tipografía · needs a decision
+### 2. Tipografía · in-progress
 One self hosted font family with a Latin subset, chosen so the page reads as the brand without leaving the primera vista budget. Cross cutting: every later section uses it, so it lands before El lugar.
 **Done when:** the font loads from the export (no third party request); the primera vista stays within budget with it; Lighthouse reports no layout shift; the fallback stack keeps the text readable while it loads.
-- [ ] Design it (spec): `/architect tipografía`
+spec [0007](../specs/0007-tipografia.md)
+- [x] Design it (spec): `/architect tipografía`
+- [ ] Build it: `/develop tipografía`
+   - [x] Playfair Display loaded and the type tokens in `@theme` (AC-1, AC-2, AC-5, AC-8)
+   - [x] Portada frase on `font-titulo` and `--text-frase`, still on 2 lines (AC-1, AC-7, AC-8, AC-10)
+   - [x] CLS gate in `pnpm lighthouse`, worst of five runs (AC-4)
+   - [ ] Checks into `.verify/slice-tipografia/` and the real Android phone (AC-2, AC-3, AC-6, AC-7, AC-9)
+- [ ] Verify it: `/check verify tipografía`
 
 ### 11. Lighthouse estable · done
 Surfaced while verifying the Portada: the Lighthouse check judges a single run, and on this machine one run of the same build swings from 67 to 98 on Rendimiento because of CPU load. It should run several times and judge the median, so a slice fails because of the page, not the laptop.

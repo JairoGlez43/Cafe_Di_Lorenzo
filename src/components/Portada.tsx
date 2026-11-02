@@ -23,7 +23,7 @@ export function Portada() {
               />
             </picture>
           </h1>
-          <p className="max-w-[16ch] text-4xl leading-tight font-semibold text-balance sm:text-5xl">
+          <p className="max-w-[16ch] font-titulo text-frase font-semibold text-balance">
             {portada.frase}
           </p>
           {/* Acción principal: name first so Maps can match the place, not only the street. */}

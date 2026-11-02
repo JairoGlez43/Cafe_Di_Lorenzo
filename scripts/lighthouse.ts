@@ -1,8 +1,10 @@
 // Lighthouse mobile (default config: simulated slow network, CPU x4) over out/.
 // Runs 5 times, saves every JSON report in .verify/slice-N/ and judges the median run (spec 0006)
-// against the CLAUDE.md limits: Performance and Accessibility >= 90, LCP <= 3 s.
-// Limits can be changed through env vars (LIGHTHOUSE_RENDIMIENTO, LIGHTHOUSE_ACCESIBILIDAD,
-// LIGHTHOUSE_LCP_MS) to prove the script fails. Usage: pnpm lighthouse <N> (after `pnpm build`).
+// against the CLAUDE.md limits: Performance and Accessibility >= 90, LCP <= 3 s. CLS <= 0.02 is
+// judged on the worst run instead (spec 0007), since the median is picked by FCP and TTI and could
+// skip a run with a jump. Limits can be changed through env vars (LIGHTHOUSE_RENDIMIENTO,
+// LIGHTHOUSE_ACCESIBILIDAD, LIGHTHOUSE_LCP_MS, LIGHTHOUSE_CLS) to prove the script fails.
+// Usage: pnpm lighthouse <N> (after `pnpm build`).
 import { mkdir, writeFile } from "node:fs/promises";
 import { launch } from "chrome-launcher";
 import lighthouse from "lighthouse";
@@ -15,6 +17,7 @@ const limites = {
   rendimiento: Number(process.env.LIGHTHOUSE_RENDIMIENTO ?? 90),
   accesibilidad: Number(process.env.LIGHTHOUSE_ACCESIBILIDAD ?? 90),
   lcp: Number(process.env.LIGHTHOUSE_LCP_MS ?? 3000),
+  cls: Number(process.env.LIGHTHOUSE_CLS ?? 0.02),
 };
 
 const slice = process.argv[2];
@@ -29,6 +32,8 @@ const valores = ({ categories, audits }: Resultado) => ({
   rendimiento: Math.round((categories.performance.score ?? 0) * 100),
   accesibilidad: Math.round((categories.accessibility.score ?? 0) * 100),
   lcp: Math.round(audits["largest-contentful-paint"].numericValue ?? Infinity),
+  // Not rounded: judged as measured, rounded only when printed.
+  cls: audits["cumulative-layout-shift"].numericValue ?? Infinity,
 });
 
 await mkdir(carpeta, { recursive: true });
@@ -49,8 +54,14 @@ try {
     await writeFile(`${carpeta}/lighthouse-${i}.json`, resultado.report as string);
     pasadas.push(resultado.lhr);
     const v = valores(resultado.lhr);
-    console.log(`Pasada ${i}: Rendimiento ${v.rendimiento} · Accesibilidad ${v.accesibilidad} · LCP ${v.lcp} ms`);
+    console.log(
+      `Pasada ${i}: Rendimiento ${v.rendimiento} · Accesibilidad ${v.accesibilidad} · LCP ${v.lcp} ms · CLS ${v.cls.toFixed(3)}`,
+    );
   }
+
+  const cls = pasadas.map((p) => valores(p).cls);
+  const peorCls = Math.max(...cls);
+  const peor = cls.indexOf(peorCls) + 1;
 
   // The run closest to the median FCP and TTI, so all three numbers come from one real run.
   const mediana = computeMedianRun(pasadas);
@@ -61,6 +72,7 @@ try {
     ["Rendimiento", v.rendimiento, `>= ${limites.rendimiento}`, v.rendimiento >= limites.rendimiento],
     ["Accesibilidad", v.accesibilidad, `>= ${limites.accesibilidad}`, v.accesibilidad >= limites.accesibilidad],
     ["LCP (ms)", v.lcp, `<= ${limites.lcp}`, v.lcp <= limites.lcp],
+    [`CLS (peor: ${peor})`, peorCls.toFixed(3), `<= ${limites.cls}`, peorCls <= limites.cls],
   ] as const;
 
   let falla = false;
@@ -69,7 +81,7 @@ try {
     console.log(`${nombre.padEnd(14)} ${String(valor).padStart(6)}  ${limite.padEnd(8)} ${ok ? "OK" : "FALLA"}`);
   }
   const { audits } = mediana;
-  console.log(`TBT ${Math.round(audits["total-blocking-time"].numericValue ?? 0)} ms · CLS ${audits["cumulative-layout-shift"].displayValue}`);
+  console.log(`TBT ${Math.round(audits["total-blocking-time"].numericValue ?? 0)} ms`);
   console.log(`Informe: ${carpeta}/lighthouse-${numero}.json`);
   process.exitCode = falla ? 1 : 0;
 } finally {

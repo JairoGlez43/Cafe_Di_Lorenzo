@@ -1,10 +1,23 @@
 @import "tailwindcss";
 
 /* Single theme (spec 0003). Colours sampled from the logo; each one becomes a
-   CSS variable (--color-verde) and its utilities (bg-verde, text-dorado). */
+   CSS variable (--color-verde) and its utilities (bg-verde, text-dorado).
+   Title sizes (spec 0007) work the same way: --text-frase gives text-frase,
+   with its line height. */
 @theme {
   --color-verde: #204229;
   --color-dorado: #c4a472;
   --color-crema: #f5efe2;
   --color-tinta: #1b2a1f;
+
+  --text-frase: clamp(2.25rem, 1.5rem + 3.2vw, 3.25rem);
+  --text-frase--line-height: 1.15;
+  --text-titulo: clamp(1.75rem, 1.25rem + 2vw, 2.5rem);
+  --text-titulo--line-height: 1.2;
+}
+
+/* Title font (spec 0007). inline because it points at --font-playfair, which
+   next/font sets on <html>; the font-titulo utility uses that variable directly. */
+@theme inline {
+  --font-titulo: var(--font-playfair);
 }

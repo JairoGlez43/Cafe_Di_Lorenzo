@@ -52,8 +52,9 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
 - `pnpm test`: tests (Vitest).
 - `pnpm weight`: script de peso sobre `out/` (primera vista a 375×812, página completa, JS gzip); sale con 1 si se pasa un límite.
 - `pnpm shots <N>`: capturas de Playwright a 375 y 1440 px, normal y reduced-motion, en `.verify/slice-N/`.
-- `pnpm lighthouse <N>`: Lighthouse móvil (red lenta simulada, CPU ×4) sobre `out/`; guarda el JSON en
-  `.verify/slice-N/` y sale con 1 si Rendimiento o Accesibilidad < 90 o LCP > 3 s.
+- `pnpm lighthouse <N>`: Lighthouse móvil (red lenta simulada, CPU ×4) sobre `out/`, 5 pasadas seguidas;
+  guarda cada JSON (`lighthouse-1.json` … `-5.json`) en `.verify/slice-N/` y juzga la pasada mediana
+  (`computeMedianRun`, spec 0006): sale con 1 si Rendimiento o Accesibilidad < 90, LCP > 3 s o una pasada se rompe.
 - `pnpm dev` también ejecuta `pnpm images` antes, igual que `build`.
 - `pnpm lint`: ESLint con la config de Next (core-web-vitals + TypeScript).
 - Los scripts de `scripts/` corren con `node` directo sobre TypeScript (Node 24 quita los tipos):
@@ -61,6 +62,8 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
   puerto libre a través de `scripts/servidor.ts`.
 - `pnpm weight` admite `PESO_PRIMERA_VISTA_KB`, `PESO_PAGINA_KB` y `PESO_JS_KB` para bajar los
   límites y comprobar que el script falla.
+- `pnpm lighthouse` admite `LIGHTHOUSE_RENDIMIENTO`, `LIGHTHOUSE_ACCESIBILIDAD` y `LIGHTHOUSE_LCP_MS` para lo
+  mismo (p. ej. `LIGHTHOUSE_LCP_MS=100` tiene que fallar).
 - `pnpm deploy:pages`: sube `out/` a Cloudflare Pages con wrangler (dependencia de desarrollo); antes,
   `pnpm build`. La primera vez pide `pnpm exec wrangler login`. No se llama `deploy` porque
   `pnpm deploy` es un comando propio de pnpm.
