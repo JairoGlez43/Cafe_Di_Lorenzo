@@ -13,15 +13,20 @@ export const cafe = {
   direccion: "Calle 20 e/ 31A y 33, Miramar, Playa, La Habana, Cuba",
   whatsapp: "+53 50539476",
   instagram: "cafe_dilorenzo_habana",
+  horario: "Todos los días · 8:00 a 23:00", // provisional; Visítanos reuses it
   // Originals from Instagram, private demo only (spec 0004). Converted by scripts/images.ts.
   logo: { origen: "references/img-1_files/DiLorenzo_Logo.jpg", alt: "Café Di Lorenzo" },
 };
 
+// Bar anchors, one per section that exists (spec 0008 AC-8). Each section adds its own.
+export const navegacion: { id: string; etiqueta: string }[] = [];
+
 export const portada = {
+  etiqueta: "Miramar · La Habana",
   frase: "De día, jardín. De noche, velas.", // provisional
   foto: {
-    origen: "references/img-1_files/539809084_17941597299029391_6602350509553311694_n.jpg",
-    alt: "Mesa del café con velas encendidas, flores blancas y una tetera de porcelana",
+    origen: "references/img-1_files/583783959_17950113657029391_3103025115156968219_n.jpg",
+    alt: "Batidos y limonadas con pajitas doradas sobre una mesa del jardín",
   },
   acciones: {
     comoLlegar: "Cómo llegar",
