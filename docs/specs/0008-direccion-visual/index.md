@@ -262,10 +262,10 @@ user. Each step leaves `pnpm build` green.
 
 1. [x] `src/content.ts`: photo #12 with its alt, `portada.etiqueta`, `cafe.horario` (provisional),
    empty `navegacion`, satisfies **AC-6**, **AC-8**
-2. `src/lib/imagenes.ts` and `scripts/images.ts`: add `portadaMovil` and `portadaAncha` next to the
+2. [x] `src/lib/imagenes.ts` and `scripts/images.ts`: add `portadaMovil` and `portadaAncha` next to the
    old `portada` (removed in step 6); run `pnpm images` and check the 828 px AVIF is 45 KB or less,
    satisfies **AC-5**, **AC-12**
-3. `src/app/globals.css`: `--color-noche`, `.cielo` with grain and `anochecer`, the `--fondo`
+3. [x] `src/app/globals.css`: `--color-noche`, `.cielo` with grain and `anochecer`, the `--fondo`
    fallback, the utilities and the motion vocabulary; `<div className="cielo">` in
    `src/app/layout.tsx`, satisfies **AC-1**, **AC-2**, **AC-3**, **AC-4**, **AC-10**, **AC-11**
 4. `src/components/Fronda.tsx` and `src/components/ComoLlegar.tsx`, satisfies **AC-7**, **AC-9**

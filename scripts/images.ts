@@ -15,11 +15,19 @@ function recorteCircular(ancho: number) {
   );
 }
 
-async function generar(nombre: Variante, origen: string, circular = false) {
+// posicion: which part of the original the cover crop keeps. The arch keeps the top;
+// the full bleed Portada keeps the centre (spec 0008).
+type Opciones = { circular?: boolean; posicion?: "top" | "centre" };
+
+async function generar(
+  nombre: Variante,
+  origen: string,
+  { circular = false, posicion = "top" }: Opciones = {},
+) {
   const { anchos, proporcion } = variantes[nombre];
   for (const ancho of anchos) {
     const alto = Math.round(ancho * proporcion);
-    let imagen = sharp(origen).resize(ancho, alto, { fit: "cover", position: "top" });
+    let imagen = sharp(origen).resize(ancho, alto, { fit: "cover", position: posicion });
     if (circular) {
       imagen = sharp(await imagen.png().toBuffer()).composite([
         { input: recorteCircular(ancho), blend: "dest-in" },
@@ -34,5 +42,7 @@ async function generar(nombre: Variante, origen: string, circular = false) {
 }
 
 await mkdir("public/img", { recursive: true });
-await generar("logo", cafe.logo.origen, true);
+await generar("logo", cafe.logo.origen, { circular: true });
 await generar("portada", portada.foto.origen);
+await generar("portadaMovil", portada.foto.origen, { posicion: "centre" });
+await generar("portadaAncha", portada.foto.origen, { posicion: "centre" });

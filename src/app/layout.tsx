@@ -30,7 +30,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${fuenteTitulo.variable} ${fuenteTexto.variable}`}>
-      <body className="bg-verde text-crema">{children}</body>
+      <body className="text-crema">
+        {/* Day to night background layer (spec 0008); <body> paints no background. */}
+        <div className="cielo" aria-hidden />
+        {children}
+      </body>
     </html>
   );
 }

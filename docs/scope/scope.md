@@ -91,7 +91,7 @@ The visual direction lands here: the page becomes a journey from day green to ni
 spec [0008](../specs/0008-direccion-visual/index.md)
 - [x] Design it (spec): `/architect dirección visual`
 - [ ] Build it: `/develop portada de día`
-   - [ ] Content, image variants and the shared CSS: tokens, sky layer, fallback, utilities, motion (AC-1, AC-3, AC-4, AC-10, AC-11)
+   - [x] Content, image variants and the shared CSS: tokens, sky layer, fallback, utilities, motion (AC-1, AC-3, AC-4, AC-10, AC-11)
    - [ ] Fronda, ComoLlegar and Barra components (AC-7, AC-8, AC-9)
    - [ ] Portada rewritten on the new system (AC-5, AC-6, AC-9)
    - [ ] Checks into `.verify/slice-portada-dia/` and a first look on the phone (AC-12, AC-13, AC-14)
