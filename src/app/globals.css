@@ -16,8 +16,11 @@
   --text-titulo--line-height: 1.2;
 }
 
-/* Title font (spec 0007). inline because it points at --font-playfair, which
-   next/font sets on <html>; the font-titulo utility uses that variable directly. */
+/* Fonts (spec 0007). inline because they point at variables next/font sets on
+   <html>; the utilities use those variables directly. font-titulo is Playfair
+   Display; --font-sans is Rethink Sans, and Tailwind applies it to <html>
+   through --default-font-family, so text needs no font class. */
 @theme inline {
   --font-titulo: var(--font-playfair);
+  --font-sans: var(--font-rethink);
 }

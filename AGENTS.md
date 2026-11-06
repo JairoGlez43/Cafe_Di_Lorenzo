@@ -55,7 +55,10 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
 - `pnpm lighthouse <N>`: Lighthouse móvil (red lenta simulada, CPU ×4) sobre `out/`, 5 pasadas seguidas;
   guarda cada JSON (`lighthouse-1.json` … `-5.json`) en `.verify/slice-N/` y juzga la pasada mediana
   (`computeMedianRun`, spec 0006): sale con 1 si Rendimiento o Accesibilidad < 90, LCP > 3 s o una pasada se rompe.
+  El CLS se juzga aparte, en la peor de las 5 pasadas: sale con 1 si pasa de 0,02 o falta el valor (spec 0007).
 - `pnpm dev` también ejecuta `pnpm images` antes, igual que `build`.
+- `pnpm build` necesita internet: `next/font/google` descarga Playfair Display y la guarda en `out/`
+  (spec 0007). Sin conexión el build falla; `dev` solo avisa y usa la fuente de reserva.
 - `pnpm lint`: ESLint con la config de Next (core-web-vitals + TypeScript).
 - Los scripts de `scripts/` corren con `node` directo sobre TypeScript (Node 24 quita los tipos):
   importan con extensión `.ts` y usan `await` de nivel superior. Todos sirven `out/` con gzip en un
@@ -63,7 +66,7 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
 - `pnpm weight` admite `PESO_PRIMERA_VISTA_KB`, `PESO_PAGINA_KB` y `PESO_JS_KB` para bajar los
   límites y comprobar que el script falla.
 - `pnpm lighthouse` admite `LIGHTHOUSE_RENDIMIENTO`, `LIGHTHOUSE_ACCESIBILIDAD` y `LIGHTHOUSE_LCP_MS` para lo
-  mismo (p. ej. `LIGHTHOUSE_LCP_MS=100` tiene que fallar).
+  mismo (p. ej. `LIGHTHOUSE_LCP_MS=100` tiene que fallar), y `LIGHTHOUSE_CLS` (`-1` tiene que fallar).
 - `pnpm deploy:pages`: sube `out/` a Cloudflare Pages con wrangler (dependencia de desarrollo); antes,
   `pnpm build`. La primera vez pide `pnpm exec wrangler login`. No se llama `deploy` porque
   `pnpm deploy` es un comando propio de pnpm.
@@ -74,6 +77,10 @@ Pasa el script de peso tras el build, pasa Lighthouse, tiene capturas de Playwri
 - Colores: `@theme` en `src/app/globals.css` define `--color-verde`, `--color-dorado`,
   `--color-crema` y `--color-tinta`; se usan como utilidades (`bg-verde`, `text-dorado`). No hay
   colores sueltos fuera de ahí.
+- Tipografía (spec 0007): los títulos usan `font-titulo` (Playfair Display 600, cargada en
+  `src/app/layout.tsx`) siempre con `font-semibold` y un token de tamaño de `@theme` (`text-frase`,
+  `text-titulo`), nunca `text-4xl` y similares ni menos de 20 px. Cuerpo, botones y enlaces quedan
+  en la sans del sistema.
 - Cada imagen tiene su origen en `src/content.ts`, su variante (anchos y proporción) en
   `src/lib/imagenes.ts` y una llamada `generar` en `scripts/images.ts`. Los componentes usan
   `<picture>` con `<source>` AVIF e `<img>` WebP; nunca `next/image`.

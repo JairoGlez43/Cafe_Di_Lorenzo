@@ -19,6 +19,7 @@ Every feature below shares the same bar from `AGENTS.md`: weight script passes a
 | 1 | Portada deployed | Slice 1 | done |
 | 2 | Tipografía | Foundation | in-progress |
 | 11 | Lighthouse estable | Foundation | done |
+| 12 | Portada de día | Foundation | in-progress |
 | 3 | El lugar | Slice 2 | planned |
 | 4 | Visítanos | Slice 2 | planned |
 | 5 | Animación protagonista | Slice 3 | planned |
@@ -60,7 +61,7 @@ code in `src/components/Portada.tsx`, `src/app/page.tsx`, `public/_headers`
 ## Foundation for slice 2
 
 ### 2. Tipografía · in-progress
-One self hosted font family with a Latin subset, chosen so the page reads as the brand without leaving the primera vista budget. Cross cutting: every later section uses it, so it lands before El lugar.
+Self hosted fonts with a Latin subset (Playfair Display for titles, Rethink Sans for text since spec 0007 was updated on 2026-11-04), chosen so the page reads as the brand without leaving the primera vista budget. Cross cutting: every later section uses them, so they land before El lugar.
 **Done when:** the font loads from the export (no third party request); the primera vista stays within budget with it; Lighthouse reports no layout shift; the fallback stack keeps the text readable while it loads.
 spec [0007](../specs/0007-tipografia.md) · code in `src/app/layout.tsx`, `src/app/globals.css`, `src/components/Portada.tsx`, `scripts/lighthouse.ts`
 - [x] Design it (spec): `/architect tipografía`
@@ -70,6 +71,11 @@ spec [0007](../specs/0007-tipografia.md) · code in `src/app/layout.tsx`, `src/a
    - [x] CLS gate in `pnpm lighthouse`, worst of five runs (AC-4)
    - [x] Checks into `.verify/slice-tipografia/` and the real Android phone (AC-2, AC-3, AC-6, AC-7, AC-9)
 - [x] Verify it: `/check verify tipografía`
+- [x] Build it (Rethink Sans for text): `/develop tipografía`
+   - [x] Rethink Sans loaded and wired through `--font-sans`, body family checked (AC-1, AC-2, AC-5, AC-11)
+   - [x] Checks into `.verify/slice-tipografia-texto/` with both fonts preloaded, Performance under 90 accepted on reasoning (AC-2, AC-3, AC-4, AC-6, AC-7, AC-10)
+   - [x] Deploy and the real Android phone (AC-9)
+- [ ] Verify it: `/check verify tipografía`
 
 ### 11. Lighthouse estable · done
 Surfaced while verifying the Portada: the Lighthouse check judges a single run, and on this machine one run of the same build swings from 67 to 98 on Rendimiento because of CPU load. It should run several times and judge the median, so a slice fails because of the page, not the laptop.
@@ -78,6 +84,18 @@ spec [0006](../specs/0006-lighthouse-estable/index.md)
 - [x] Design it (spec): `/architect lighthouse estable` (ratified after the build)
 - [x] Build it: `/develop lighthouse estable`
 code in `scripts/lighthouse.ts`
+
+### 12. Portada de día · in-progress
+The visual direction lands here: the page becomes a journey from day green to night green, and the Portada is rebuilt on it (a full bleed garden photo, crema text, the gold frond, the pin button, a fixed bar). Every later section follows the standard in its spec, so it comes before El lugar.
+**Done when:** the Portada matches the spec at 375 × 812, 375 × 667 and 1440 px, normal and reduced motion; the built CSS keeps the scroll animation properties; the primera vista stays near 208 KB with no new JS. The darkening and its smoothness on the real phone are checked in El lugar, the first slice with a page longer than one screen.
+spec [0008](../specs/0008-direccion-visual/index.md)
+- [x] Design it (spec): `/architect dirección visual`
+- [ ] Build it: `/develop portada de día`
+   - [ ] Content, image variants and the shared CSS: tokens, sky layer, fallback, utilities, motion (AC-1, AC-3, AC-4, AC-10, AC-11)
+   - [ ] Fronda, ComoLlegar and Barra components (AC-7, AC-8, AC-9)
+   - [ ] Portada rewritten on the new system (AC-5, AC-6, AC-9)
+   - [ ] Checks into `.verify/slice-portada-dia/` and a first look on the phone (AC-12, AC-13, AC-14)
+- [ ] Verify it: `/check verify portada de día`
 
 ## Slice 2: El lugar and Visítanos
 
@@ -134,6 +152,7 @@ Out of scope for the demo, kept so the plan stays honest. Most unlock only when 
 - **Contenido confirmado por el café**: replace provisional content (product names, hours, phone, photos with permission) with what the café confirms.
 - **SEO público tras aceptar**: drop `noindex`, add a sitemap, local business structured data and a domain of its own · needs a decision
 - **Analítica ligera sin cookies**: anonymous visit and click counts for "Cómo llegar" and WhatsApp, no consent banner · needs a decision
+- **Lighthouse según la máquina**: the Performance score moves with the laptop's CPU (`benchmarkIndex` 2100 in slice 1, 1060 to 1360 on 2026-11-05, same JS); make the gate account for it (adjusted CPU slowdown or a fixed environment) so a slice fails because of the page · needs a decision · from spec 0007
 - **Límites por env var validados**: `pnpm lighthouse` and `pnpm weight` fail when a limit env var is not a number, instead of reading an empty string as 0 · from spec 0006
 - **Precios y pedidos**: prices, orders and reservations, left out of v1 by `AGENTS.md`; a possible v2 · needs a decision
 
